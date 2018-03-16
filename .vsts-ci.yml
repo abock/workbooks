@@ -19,4 +19,5 @@ steps:
   inputs:
     solution: CoreBuild.proj
     configuration: '$(msbuild.configuration)'
+    msbuildArguments: '/p:Profile=$(msbuild.buildProfile)'
   displayName: Build
