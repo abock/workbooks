@@ -28,3 +28,17 @@ steps:
     configuration: '$(msbuild.configuration)'
     msbuildArguments: '/t:Build /p:Profile=$(msbuild.buildProfile)'
   displayName: Build
+
+- task: MSBuild@1
+  inputs:
+    solution: CoreBuild.proj
+    configuration: '$(msbuild.configuration)'
+    msbuildArguments: '/t:Package /p:Profile=$(msbuild.buildProfile)'
+  displayName: Package
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '_artifacts'
+    ArtifactName: Artifacts
+    publishLocation: Container
+    displayName: Publish Artifacts
