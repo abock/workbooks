@@ -69,7 +69,7 @@
     Name="Build"
     DependsOnTargets="$(Profile)">
     <MSBuild
-      Projects="@(ProjectsToBuild)"
+      Projects="$(SolutionFile)"
       Properties="$(ProfileProperties)"
       Targets="Restore;Build"/>
   </Target>
