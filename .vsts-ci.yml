@@ -1,5 +1,11 @@
 steps:
 
+# Keep in sync with global.json 🙄
+- task: DotNetCoreInstaller@0
+  inputs:
+    version: 2.1.4
+  displayName: Install .NET Core
+
 # This script runs both via bash (macOS/Linux) and cmd (Windows).
 # Keep it both valid bash and batch or break it out conditionally.
 - script: |
