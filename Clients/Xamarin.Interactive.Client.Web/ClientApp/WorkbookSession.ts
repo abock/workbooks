@@ -186,4 +186,8 @@ export class WorkbookSession {
     installPackage(packageDescription: PackageDescription): Promise<PackageDescription[]> {
         return this.hubConnection.invoke("InstallPackages", [packageDescription])
     }
+
+    interact(handle: string): Promise<any> {
+        return this.hubConnection.invoke("Interact", handle)
+    }
 }

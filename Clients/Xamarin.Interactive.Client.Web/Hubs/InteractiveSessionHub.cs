@@ -14,6 +14,7 @@ using Xamarin.Interactive.CodeAnalysis;
 using Xamarin.Interactive.CodeAnalysis.Events;
 using Xamarin.Interactive.CodeAnalysis.SignatureHelp;
 using Xamarin.Interactive.NuGet;
+using Xamarin.Interactive.Representations;
 using Xamarin.Interactive.Session;
 
 namespace Xamarin.Interactive.Client.Web.Hubs
@@ -93,6 +94,11 @@ namespace Xamarin.Interactive.Client.Web.Hubs
                 targetCodeCellId,
                 evaluateAll,
                 Context.Connection.ConnectionAbortedToken);
+
+        public Task<IInteractiveObject> Interact (string handle)
+            => GetSession().EvaluationService.InteractAsync(
+                long.Parse (handle),
+                cancellationToken: Context.Connection.ConnectionAbortedToken);
 
         public Task<MonacoHover> GetHover (
             string codeCellId,
