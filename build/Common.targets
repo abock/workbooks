@@ -1,6 +1,7 @@
 <!-- These targets should be included in all of our .csproj projects -->
 <Project>
-  <Import Project="Environment.targets"/>
+  <Import Project="Xamarin.Build\Xamarin.Build.targets"/>
+  <Import Project="..\_build\Configure.g.props"/>
 
   <PropertyGroup>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>

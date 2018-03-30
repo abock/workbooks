@@ -1,0 +1,114 @@
+<Project InitialTargets="Hello" DefaultTargets="Configure">
+  <Import Project="Xamarin.Build\Xamarin.Build.targets"/>
+  <Import Project="Configure.props"/>
+
+  <Target Name="Hello">
+    <PropertyGroup>
+      <Driver>msbuild</Driver>
+      <Driver Condition="'$(MSBuildRuntimeType)' == 'Core'">dotnet msbuild</Driver>
+      <Driver>$(Driver)</Driver>
+      <ConfigureDriver>$(Driver) $([MSBuild]::MakeRelative($(MSBuildStartupDirectory),$(MSBuildThisFileFullPath)))</ConfigureDriver>
+      <BuildDriver>$(Driver) $([MSBuild]::MakeRelative($(MSBuildStartupDirectory),$(TopDirectory)CoreBuild.proj))</BuildDriver>
+    </PropertyGroup>
+
+    <Message Importance="High" Text="%20"/>
+    <Message Importance="High" Text="----------------- Workbooks &amp; Inspector Build Configuration ------------------"/>
+    <Message Importance="High" Text="%20"/>
+    <Message Importance="High" Text="Specify properties to configure globally for the build:"/>
+    <Message Importance="High" Text="%20"/>
+    <Message Importance="High" Text="Properties:"/>
+    <Message Importance="High" Text="%20"/>
+    <Message Importance="High" Text="  Configuration  Debug|Release (default: $(DefaultConfiguration))"/>
+    <Message Importance="High" Text="  Profile        $(DefaultProfile) (any or all in combination)"/>
+    <Message Importance="High" Text="%20"/>
+    <Message Importance="High" Text="Examples:"/>
+    <Message Importance="High" Text="%20"/>
+    <Message Importance="High" Text="  $(ConfigureDriver) /p:Configuration=Release /p:Profile=Web+Console"/>
+    <Message Importance="High" Text="  $(ConfigureDriver) /p:Configuration=Debug /p:Profile=Desktop"/>
+    <Message Importance="High" Text="%20"/>
+    <Message Importance="High" Text="After running this configure project with the desired properties"/>
+    <Message Importance="High" Text="the build may be run without passing any properties:"/>
+    <Message Importance="High" Text="%20"/>
+    <Message Importance="High" Text="  $(BuildDriver) $(BuildProj)"/>
+    <Message Importance="High" Text="%20"/>
+    <Message Importance="High" Text="------------------------------------------------------------------------------"/>
+    <Message Importance="High" Text="%20"/>
+  </Target>
+
+  <Target
+    Name="Configure"
+    DependsOnTargets="ResolveExternalTools">
+    <ItemGroup>
+      <ConfigureProperty Include="Configuration" Condition="'$(Configuration)' != ''">
+        <Value>$(Configuration)</Value>
+      </ConfigureProperty>
+      <ConfigureProperty Include="Profile" Condition="'$(Profile)' != ''">
+        <Value>$(Profile)</Value>
+      </ConfigureProperty>
+    </ItemGroup>
+
+    <PropertyGroup>
+      <ConfigurationFile>$(MSBuildThisFileDirectory)..\_build\Configure.g.props</ConfigurationFile>
+    </PropertyGroup>
+
+    <GenerateConfigureProject
+      InputFile="Configure.props"
+      OutputFile="$(ConfigurationFile)"
+      OverrideProperties="@(ConfigureProperty)"/>
+
+    <Message Importance="High" Text="%20"/>
+    <Message
+      Importance="High"
+      Text="Generated '$([MSBuild]::MakeRelative($(MSBuildStartupDirectory),$(ConfigurationFile)))'"/>
+  </Target>
+
+  <Target Name="ResolveExternalTools">
+    <Which
+      Condition="!Exists('$(Node)')"
+      Program="node"
+      PreferPaths="@(WhichSearchPath)">
+      <Output TaskParameter="FullPath" PropertyName="Node"/>
+    </Which>
+    <ItemGroup>
+      <ConfigureProperty Include="Node">
+        <Value>$(Node)</Value>
+      </ConfigureProperty>
+    </ItemGroup>
+
+    <Which
+      Condition="!Exists('$(Npm)')"
+      Program="npm"
+      PreferPaths="@(WhichSearchPath)">
+      <Output TaskParameter="FullPath" PropertyName="Npm"/>
+    </Which>
+    <ItemGroup>
+      <ConfigureProperty Include="Npm">
+        <Value>$(Npm)</Value>
+      </ConfigureProperty>
+    </ItemGroup>
+
+    <Which
+      Condition="!Exists('$(Yarn)')"
+      Program="yarn"
+      PreferPaths="@(WhichSearchPath)">
+      <Output TaskParameter="FullPath" PropertyName="Yarn"/>
+    </Which>
+    <ItemGroup>
+      <ConfigureProperty Include="Yarn">
+        <Value>$(Yarn)</Value>
+      </ConfigureProperty>
+    </ItemGroup>
+
+    <Which
+      Condition="!Exists('$(NuGet)')"
+      Program="nuget"
+      PreferPaths="@(WhichSearchPath)">
+      <Output TaskParameter="FullPath" PropertyName="NuGet"/>
+    </Which>
+    <ItemGroup>
+      <ConfigureProperty Include="NuGet">
+        <Value>$(NuGet)</Value>
+      </ConfigureProperty>
+    </ItemGroup>
+  </Target>
+</Project>

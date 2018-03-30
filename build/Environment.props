@@ -2,6 +2,8 @@
   <PropertyGroup>
     <TopDirectory>$([MSBuild]::NormalizeDirectory($(MSBuildThisFileDirectory)..))</TopDirectory>
     <ProprietaryDirectory>$([MSBuild]::NormalizeDirectory($(TopDirectory)workbooks-proprietary))</ProprietaryDirectory>
+    <BuiltWorkbookAppsBasePath>$([MSBuild]::NormalizeDirectory($(TopDirectory)_build\$(Configuration)\WorkbookApps))</BuiltWorkbookAppsBasePath>
+    <ArtifactsBasePath>$([MSBuild]::NormalizeDirectory($(TopDirectory)_artifacts))</ArtifactsBasePath>
   </PropertyGroup>
 
   <Import
@@ -11,18 +13,16 @@
   <PropertyGroup>
     <IsWindows>false</IsWindows>
     <IsWindows Condition="$([MSBuild]::IsOSPlatform('Windows'))">true</IsWindows>
-    <RuntimeIdentifierPlatformBase Condition="$(IsWindows)">win</RuntimeIdentifierPlatformBase>
 
     <IsMac>false</IsMac>
     <IsMac Condition="$([MSBuild]::IsOSPlatform('OSX'))">true</IsMac>
-    <RuntimeIdentifierPlatformBase Condition="$(IsMac)">osx</RuntimeIdentifierPlatformBase>
 
     <IsLinux>false</IsLinux>
     <IsLinux Condition="$([MSBuild]::IsOSPlatform('Linux'))">true</IsLinux>
-    <RuntimeIdentifierPlatformBase Condition="$(IsLinux)">linux</RuntimeIdentifierPlatformBase>
 
-    <IsDotNetCoreMSBuild>false</IsDotNetCoreMSBuild>
-    <IsDotNetCoreMSBuild Condition="'$(MSBuildRuntimeType)' == 'Core'">true</IsDotNetCoreMSBuild>
+    <RuntimeIdentifierPlatformBase Condition="$(IsWindows)">win</RuntimeIdentifierPlatformBase>
+    <RuntimeIdentifierPlatformBase Condition="$(IsMac)">osx</RuntimeIdentifierPlatformBase>
+    <RuntimeIdentifierPlatformBase Condition="$(IsLinux)">linux</RuntimeIdentifierPlatformBase>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -44,18 +44,5 @@
   <ItemGroup>
     <WhichSearchPath Include="$(TopDirectory)"/>
     <WhichSearchPath Include="$(Provisionator_ArtifactCachePath)"/>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ConfigurationSummary Include="Host Environment:"/>
-    <ConfigurationSummary Include="%20%20Host RID Base: $(RuntimeIdentifierPlatformBase)"/>
-    <ConfigurationSummary Include="%20%20.NET Core MSBuild: $(IsDotNetCoreMSBuild)"/>
-    <ConfigurationSummary Include="%20%20MSBuildBinPath: $(MSBuildBinPath)"/>
-    <ConfigurationSummary Include="%20%20MSBuildExtensionsPath: $(MSBuildExtensionsPath)"/>
-    <ConfigurationSummary Include="%20%20Available SDKs/Frameworks:"/>
-    <ConfigurationSummary Include="%20%20%20%20Mono: $(HaveMono)"/>
-    <ConfigurationSummary Include="%20%20%20%20Xamarin.Mac: $(HaveXamarinMac)"/>
-    <ConfigurationSummary Include="%20%20%20%20Xamarin.iOS: $(HaveXamarinIos)"/>
-    <ConfigurationSummary Include="%20%20%20%20Xamarin.Android: $(HaveXamarinAndroid)"/>
   </ItemGroup>
 </Project>

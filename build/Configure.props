@@ -1,0 +1,11 @@
+<Project>
+  <Import Project="Environment.props"/>
+
+  <PropertyGroup>
+    <DefaultConfiguration>Debug</DefaultConfiguration>
+    <Configuration>$(DefaultConfiguration)</Configuration>
+
+    <DefaultProfile>Desktop+Web+Console</DefaultProfile>
+    <Profile>$(DefaultProfile)</Profile>
+  </PropertyGroup>
+</Project>

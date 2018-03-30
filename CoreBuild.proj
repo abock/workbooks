@@ -1,23 +1,26 @@
-<Project InitialTargets="Configure" DefaultTargets="Restore;Build">
-  <Import Project="build\Top.targets"/>
+<Project DefaultTargets="Restore;Build">
+  <Import Project="build\Xamarin.Build\Xamarin.Build.targets"/>
+  <Import Project="build\Metadata.targets"/>
   <Import Project="build\Clean.targets"/>
 
   <Import
-    Project="build.local.props"
-    Condition="Exists('build.local.props')"/>
+    Condition="Exists('_build\Configure.g.props')"
+    Project="_build\Configure.g.props"/>
 
   <PropertyGroup>
-    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
-
-    <!-- TODO: Move all of this to environment.props -->
-    <BuiltWorkbookAppsBasePath>$(MSBuildThisFileDirectory)_build\$(Configuration)\WorkbookApps\</BuiltWorkbookAppsBasePath>
-    <ArtifactsBasePath>$(MSBuildThisFileDirectory)_artifacts\</ArtifactsBasePath>
-    <ProfileProperties>
-      Configuration=$(Configuration);
-      BuiltWorkbookAppsBasePath=$(BuiltWorkbookAppsBasePath);
-      ArtifactsBasePath=$(ArtifactsBasePath);
-    </ProfileProperties>
+    <IsDotNetCoreMSBuild>false</IsDotNetCoreMSBuild>
+    <IsDotNetCoreMSBuild Condition="'$(MSBuildRuntimeType)' == 'Core'">true</IsDotNetCoreMSBuild>
   </PropertyGroup>
+
+  <Target Name="CheckConfigure">
+    <PropertyGroup>
+      <Driver>msbuild</Driver>
+      <Driver Condition="$(IsDotNetCoreMSBuild)">dotnet msbuild</Driver>
+    </PropertyGroup>
+    <Error
+      Condition="!Exists('_build\Configure.g.props')"
+      Text="You must first configure the build using '$(Driver) build/Configure.proj'."/>
+  </Target>
 
   <!-- Profiles -->
 
@@ -164,7 +167,7 @@
 
   <Target
     Name="Build"
-    DependsOnTargets="@(ProfileTargets)">
+    DependsOnTargets="CheckConfigure;@(ProfileTargets)">
     <MSBuild
       Projects="$(SolutionFile)"
       Properties="$(ProfileProperties)"
@@ -173,7 +176,7 @@
 
   <Target
     Name="Restore"
-    DependsOnTargets="@(ProfileTargets)">
+    DependsOnTargets="CheckConfigure;@(ProfileTargets)">
     <Message Importance="High" Text="Restoring NuGet packages for $(SolutionFileRelative)..."/>
     <MSBuild
       Projects="$(SolutionFile)"
@@ -185,7 +188,7 @@
 
   <Target
     Name="Package"
-    DependsOnTargets="@(ProfileTargets)">
+    DependsOnTargets="CheckConfigure;@(ProfileTargets)">
     <ItemGroup>
       <PackageProjectsToBuild
         Include="@(ProjectsToBuild)"
@@ -199,7 +202,7 @@
 
   <Target
     Name="Test"
-    DependsOnTargets="@(ProfileTargets)">
+    DependsOnTargets="CheckConfigure;@(ProfileTargets)">
     <ItemGroup>
       <ProjectsToTest
         Include="@(ProjectsToBuild)"
@@ -213,26 +216,6 @@
   </Target>
 
   <!-- Configuration / Solution Generation -->
-
-  <Target
-    Name="Configure">
-    <PropertyGroup>
-      <Profile Condition="'$(Profile.ToLowerInvariant())' == 'full'"></Profile>
-      <Profile Condition="'$(Profile.ToLowerInvariant())' == 'fullprofile'"></Profile>
-      <Profile Condition="'$(Profile)' == ''">Desktop+Web+Console</Profile>
-    </PropertyGroup>
-    <ItemGroup>
-      <Profiles Include="$(Profile.Replace('|', '+').Replace(',', '+').Replace(';', '+').Split('+'))"/>
-      <Profiles>
-        <ProfileName>$([System.Text.RegularExpressions.Regex]::Replace(
-            %(Identity),
-            'Profile$',
-            '',
-            System.Text.RegularExpressions.RegexOptions.IgnoreCase))</ProfileName>
-      </Profiles>
-      <ProfileTargets Include="@(Profiles -> '%(ProfileName)Profile')"/>
-    </ItemGroup>
-  </Target>
 
   <Target
     Name="ConfigurationSummary"

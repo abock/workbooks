@@ -35,6 +35,10 @@ Copyright 2017 Microsoft. All rights reserved.
     AssemblyFile="$(Xamarin_Build_AssemblyFile)"/>
 
   <UsingTask
+    TaskName="Xamarin.MSBuild.GenerateConfigureProject"
+    AssemblyFile="$(Xamarin_Build_AssemblyFile)"/>
+
+  <UsingTask
     TaskName="Xamarin.MSBuild.ZipArchive"
     AssemblyFile="$(Xamarin_Build_AssemblyFile)"/>
 
